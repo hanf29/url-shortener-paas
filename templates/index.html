@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>URL Shortener</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        #result {
+            margin-top: 15px;
+            padding: 10px;
+            background: #e9f7ef;
+            border: 1px solid #b8e0c2;
+            border-radius: 4px;
+            display: none;
+        }
+        #result a {
+            color: #007bff;
+            word-break: break-all;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+        footer {
+            text-align: center;
+            color: #777;
+            font-size: 12px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>URL Shortener</h1>
+
+    <div class="box">
+        <input type="url" id="urlInput" placeholder="Masukkan URL panjang...">
+        <button onclick="shortenURL()">Pendekkan</button>
+        <div id="error" class="error"></div>
+        <div id="result"></div>
+    </div>
+
+    <footer>
+        Muhammad Raihan Fadhilah · 1202220335 · Komputasi Awan
+    </footer>
+
+    <script>
+        async function shortenURL() {
+            const url = document.getElementById('urlInput').value.trim();
+            const errorDiv = document.getElementById('error');
+            const resultDiv = document.getElementById('result');
+            errorDiv.textContent = '';
+            resultDiv.style.display = 'none';
+
+            if (!url) {
+                errorDiv.textContent = 'URL tidak boleh kosong';
+                return;
+            }
+
+            try {
+                const response = await fetch('/shorten', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: url })
+                });
+                const data = await response.json();
+
+                if (!response.ok) {
+                    errorDiv.textContent = data.error;
+                    return;
+                }
+
+                resultDiv.innerHTML = `
+                    <strong>Short URL:</strong><br>
+                    <a href="${data.short_url}" target="_blank">${data.short_url}</a><br><br>
+                    <strong>Klik:</strong> ${data.data.click_count}
+                `;
+                resultDiv.style.display = 'block';
+            } catch (err) {
+                errorDiv.textContent = 'Gagal: ' + err.message;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,255 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #2d3748;
+    padding: 2rem 1rem;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    color: white;
+    margin-bottom: 2rem;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+section {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+}
+
+h2 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    color: #2d3748;
+}
+
+h3 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: #2f855a;
+}
+
+.input-group {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.input-group input {
+    flex: 1;
+    padding: 0.85rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+}
+
+.input-group input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+}
+
+.input-group button {
+    padding: 0.85rem 1.5rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    white-space: nowrap;
+}
+
+.input-group button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.input-group button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.error-msg {
+    color: #e53e3e;
+    font-size: 0.9rem;
+    min-height: 1.2rem;
+    margin-top: 0.25rem;
+}
+
+.result-card {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f0fff4, #e6fffa);
+    border-left: 4px solid #38a169;
+    border-radius: 8px;
+}
+
+.result-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(56, 161, 105, 0.15);
+}
+
+.result-row:last-child {
+    border-bottom: none;
+}
+
+.label {
+    font-weight: 600;
+    color: #2f855a;
+    min-width: 100px;
+}
+
+.short-url {
+    color: #667eea;
+    font-weight: 600;
+    text-decoration: none;
+    word-break: break-all;
+}
+
+.short-url:hover {
+    text-decoration: underline;
+}
+
+.original-url {
+    color: #4a5568;
+    word-break: break-all;
+    flex: 1;
+}
+
+.click-count {
+    font-weight: 700;
+    color: #2d3748;
+    font-size: 1.2rem;
+}
+
+.copy-btn, .refresh-btn {
+    padding: 0.4rem 0.85rem;
+    background: white;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.15s;
+}
+
+.copy-btn:hover, .refresh-btn:hover {
+    background: #f7fafc;
+    border-color: #667eea;
+}
+
+.stats-result {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #f7fafc;
+    border-radius: 8px;
+}
+
+.stats-detail p {
+    margin: 0.5rem 0;
+}
+
+.big-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #667eea;
+}
+
+.error {
+    color: #e53e3e;
+    font-weight: 500;
+}
+
+.api-info ul {
+    list-style: none;
+}
+
+.api-info li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #edf2f7;
+    color: #4a5568;
+}
+
+.api-info li:last-child {
+    border-bottom: none;
+}
+
+.api-info code {
+    background: #edf2f7;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.9rem;
+    color: #2d3748;
+    margin-right: 0.5rem;
+}
+
+.hidden {
+    display: none;
+}
+
+footer {
+    text-align: center;
+    color: white;
+    opacity: 0.85;
+    margin-top: 2rem;
+    font-size: 0.9rem;
+}
+
+footer p {
+    margin: 0.25rem 0;
+}
+
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 2rem;
+    }
+    section {
+        padding: 1.5rem;
+    }
+    .input-group {
+        flex-direction: column;
+    }
+    .label {
+        min-width: auto;
+    }
+}
