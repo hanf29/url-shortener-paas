@@ -42,6 +42,15 @@
         button:hover {
             background: #0056b3;
         }
+        .refresh-btn {
+            padding: 4px 10px;
+            font-size: 12px;
+            background: #6c757d;
+            margin-left: 8px;
+        }
+        .refresh-btn:hover {
+            background: #545b62;
+        }
         #result {
             margin-top: 15px;
             padding: 10px;
@@ -53,6 +62,11 @@
         #result a {
             color: #007bff;
             word-break: break-all;
+        }
+        .click-display {
+            display: inline-block;
+            font-weight: bold;
+            color: #007bff;
         }
         .error {
             color: red;
@@ -77,10 +91,12 @@
     </div>
 
     <footer>
-        Muhammad Raihan Fadhilah · 1202220335 · Infrastruktur Awan
+        Muhammad Raihan Fadhilah · 1202220335 · Komputasi Awan
     </footer>
 
     <script>
+        let currentCode = null;
+
         async function shortenURL() {
             const url = document.getElementById('urlInput').value.trim();
             const errorDiv = document.getElementById('error');
@@ -106,14 +122,34 @@
                     return;
                 }
 
-                resultDiv.innerHTML = `
-                    <strong>Short URL:</strong><br>
-                    <a href="${data.short_url}" target="_blank">${data.short_url}</a><br><br>
-                    <strong>Klik:</strong> ${data.data.click_count}
-                `;
-                resultDiv.style.display = 'block';
+                currentCode = data.data.code;
+                renderResult(data.short_url, data.data.click_count);
             } catch (err) {
                 errorDiv.textContent = 'Gagal: ' + err.message;
+            }
+        }
+
+        function renderResult(shortUrl, clickCount) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <strong>Short URL:</strong><br>
+                <a href="${shortUrl}" target="_blank">${shortUrl}</a><br><br>
+                <strong>Total Klik:</strong> <span class="click-display" id="clickCount">${clickCount}</span>
+                <button class="refresh-btn" onclick="refreshCount()">🔄 Refresh</button>
+            `;
+            resultDiv.style.display = 'block';
+        }
+
+        async function refreshCount() {
+            if (!currentCode) return;
+            try {
+                const response = await fetch('/stats/' + currentCode);
+                const data = await response.json();
+                if (response.ok) {
+                    document.getElementById('clickCount').textContent = data.data.click_count;
+                }
+            } catch (err) {
+                console.error('Gagal refresh:', err);
             }
         }
     </script>
