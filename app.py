@@ -18,7 +18,7 @@ app = Flask(__name__)
 
 # Konfigurasi database dari environment variable
 database_url = os.environ.get('DATABASE_URL', 'sqlite:///local.db')
-# Railway/Heroku kadang kasih postgres:// (deprecated), SQLAlchemy butuh postgresql://
+# Railway/Heroku/Render kadang kasih postgres:// (deprecated), SQLAlchemy butuh postgresql://
 if database_url.startswith('postgres://'):
     database_url = database_url.replace('postgres://', 'postgresql://', 1)
 
@@ -27,6 +27,42 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-jangan-pakai-di-produksi')
 
 db = SQLAlchemy(app)
+
+
+# Daftar User-Agent bot/crawler/prefetcher yang harus diabaikan
+BOT_USER_AGENT_KEYWORDS = [
+    'bot', 'crawler', 'spider', 'curl', 'wget', 'python-requests',
+    'go-http-client', 'render', 'health', 'monitor', 'pingdom',
+    'uptimerobot', 'newrelic', 'datadog', 'preview', 'fetch',
+    'whatsapp', 'telegram', 'slackbot', 'discordbot', 'facebookexternalhit',
+    'twitterbot', 'linkedinbot', 'embed', 'prerender'
+]
+
+
+def is_bot_or_prefetch(req):
+    """Deteksi apakah request datang dari bot, crawler, atau browser prefetch."""
+    user_agent = req.headers.get('User-Agent', '').lower()
+
+    # Cek User-Agent terhadap daftar bot
+    for keyword in BOT_USER_AGENT_KEYWORDS:
+        if keyword in user_agent:
+            return True
+
+    # Browser prefetch biasanya kirim header Purpose: prefetch atau X-Purpose: preview
+    if req.headers.get('Purpose', '').lower() == 'prefetch':
+        return True
+    if req.headers.get('X-Purpose', '').lower() == 'preview':
+        return True
+    if req.headers.get('Sec-Purpose', '').lower().startswith('prefetch'):
+        return True
+    if req.headers.get('X-Moz', '').lower() == 'prefetch':
+        return True
+
+    # User-Agent kosong biasanya bot
+    if not user_agent:
+        return True
+
+    return False
 
 
 # Model database
@@ -60,11 +96,9 @@ def generate_code(length=6):
 # Endpoint 1: Beranda - tampilkan UI atau JSON tergantung Accept header
 @app.route('/')
 def beranda():
-    # Kalau request dari browser, tampilkan UI
     if 'text/html' in request.headers.get('Accept', ''):
         return render_template('index.html')
 
-    # Kalau dari API client (curl, Thunder Client tanpa Accept), kasih JSON
     return jsonify({
         'aplikasi': 'URL Shortener API',
         'pengembang': 'Muhammad Raihan Fadhilah (1202220335)',
@@ -79,7 +113,6 @@ def beranda():
     })
 
 
-# Endpoint untuk akses API info eksplisit (alternatif ke GET /)
 @app.route('/api')
 def api_info():
     return jsonify({
@@ -107,7 +140,6 @@ def shorten():
     if not original_url.startswith(('http://', 'https://')):
         return jsonify({'error': 'URL harus diawali http:// atau https://'}), 400
 
-    # Cek apakah URL ini sudah pernah di-shorten
     existing = ShortURL.query.filter_by(original_url=original_url).first()
     if existing:
         return jsonify({
@@ -128,10 +160,9 @@ def shorten():
     }), 201
 
 
-# Endpoint 3: Redirect
+# Endpoint 3: Redirect (dengan filter bot/prefetch)
 @app.route('/<code>')
 def redirect_url(code):
-    # Hindari konflik dengan endpoint lain
     if code in ('shorten', 'health', 'stats', 'api', 'static'):
         abort(404)
 
@@ -139,8 +170,10 @@ def redirect_url(code):
     if not short_url:
         return jsonify({'error': 'Kode tidak ditemukan'}), 404
 
-    short_url.click_count += 1
-    db.session.commit()
+    # HANYA hitung klik kalau bukan bot/prefetch
+    if not is_bot_or_prefetch(request):
+        short_url.click_count += 1
+        db.session.commit()
 
     return redirect(short_url.original_url, code=302)
 
@@ -162,7 +195,6 @@ def stats(code):
 @app.route('/health')
 def health():
     try:
-        # Cek koneksi database
         db.session.execute(db.text('SELECT 1'))
         db_status = 'connected'
     except Exception as e:
@@ -175,7 +207,6 @@ def health():
     })
 
 
-# Inisialisasi database saat aplikasi start
 with app.app_context():
     db.create_all()
 
