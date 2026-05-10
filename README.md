@@ -7,25 +7,29 @@ Tugas Mandiri Mata Kuliah Komputasi Awan (BBK3CAB3) - Platform as a Service.
 
 ## Deskripsi
 
-Aplikasi web sederhana untuk memendekkan URL panjang menjadi kode unik, sekaligus mencatat statistik klik. Dideploy ke platform PaaS Railway dengan add-on PostgreSQL.
+Aplikasi web sederhana untuk memendekkan URL panjang menjadi kode unik, sekaligus mencatat statistik klik. Dideploy ke platform PaaS Render dengan PostgreSQL sebagai database.
 
 ## Stack Teknologi
 
 - **Bahasa:** Python 3.12
 - **Framework:** Flask + Flask-SQLAlchemy
-- **Database:** PostgreSQL (Railway add-on)
+- **Database:** PostgreSQL 16
 - **WSGI Server:** Gunicorn
-- **Platform PaaS:** Railway
+- **Platform PaaS:** Render
+
+## Aplikasi Live
+
+🌐 **https://url-shortener-paas.onrender.com**
 
 ## Endpoint
 
-| Method | Endpoint        | Fungsi                          |
-|--------|-----------------|---------------------------------|
-| GET    | `/`             | Info aplikasi dan daftar endpoint |
-| POST   | `/shorten`      | Buat short URL dari URL panjang |
-| GET    | `/<code>`       | Redirect ke URL asli            |
-| GET    | `/stats/<code>` | Lihat statistik klik            |
-| GET    | `/health`       | Health check                    |
+| Method | Endpoint        | Fungsi                            |
+|--------|-----------------|-----------------------------------|
+| GET    | `/`             | Halaman utama (UI URL Shortener)  |
+| POST   | `/shorten`      | Buat short URL dari URL panjang   |
+| GET    | `/<code>`       | Redirect ke URL asli              |
+| GET    | `/stats/<code>` | Lihat statistik klik              |
+| GET    | `/health`       | Health check                      |
 
 ## Menjalankan Secara Lokal
 
@@ -43,14 +47,19 @@ Buka `http://localhost:5000`.
 
 **Memendekkan URL:**
 ```bash
-curl -X POST https://<app>.up.railway.app/shorten \
+curl -X POST https://url-shortener-paas.onrender.com/shorten \
   -H "Content-Type: application/json" \
   -d "{\"url\": \"https://telkomuniversity.ac.id\"}"
 ```
 
 **Cek statistik:**
 ```bash
-curl https://<app>.up.railway.app/stats/<code>
+curl https://url-shortener-paas.onrender.com/stats/<code>
+```
+
+**Cek kesehatan aplikasi:**
+```bash
+curl https://url-shortener-paas.onrender.com/health
 ```
 
 ## Lisensi
